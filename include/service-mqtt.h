@@ -125,14 +125,42 @@ static inline void mqtt_publish(char* topic, char* payload, int qos, bool retain
 }
 
 static inline void publish_json(char* topic, const char* json, bool retain){
+  char * newjson = (char*)malloc(4096); //use the same size as json
+  strcpy(newjson, json);
+  char* loc = strstr(newjson, "date");
+  loc[0] = 'a';
+  loc[1] = 'b';
+  loc[2] = 'c';
+  loc[3] = 'd';
   size_t len;
   char* buf;
-  const size_t inlen = strlen(json);
+  const size_t inlen = strlen(newjson);
   len = compress64encodeBound(inlen);
   buf = (char*)malloc(len);
-  compress64encode(json, inlen, buf, len);
+  compress64encode(newjson, inlen, buf, len);
   mqtt_publish(topic, buf, __service_config.qos, retain);
   free(buf);
+  free(newjson);
+
+/*  size_t len;
+  char* buf;
+  const size_t inlen = strlen(json);
+  // find location of substring
+  char* loc = strstr(json, "cf:id");
+  // calculate size of prefix and suffix
+  
+  // malloc appropriate size
+
+
+  // insert additional label before substring
+
+   
+  char* newjson = (char*)
+
+  len = compress64encodeBound(inlen);
+buf = (char*)malloc(len);
+  compress64encode(json, inlen, 
+*/
 }
 
 static inline void mqtt_print_json(char* json){
